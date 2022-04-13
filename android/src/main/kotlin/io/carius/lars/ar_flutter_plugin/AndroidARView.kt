@@ -26,7 +26,6 @@ import io.flutter.embedding.engine.loader.FlutterLoader
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import kotlinx.coroutines.*
 import io.flutter.plugin.platform.PlatformView
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -383,9 +382,8 @@ internal class AndroidARView(
                     val config = Config(session)
                     config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
                     config.focusMode = Config.FocusMode.AUTO
-                    ArCoreUtils.updateLightEstimationModeFromView(session, config, arSceneView)
                     session.configure(config)
-                    arSceneView?.setSession(session)
+                    arSceneView.setupSession(session)
                 }
             } catch (ex: UnavailableUserDeclinedInstallationException) {
                 // Display an appropriate message to the user zand return gracefully.
