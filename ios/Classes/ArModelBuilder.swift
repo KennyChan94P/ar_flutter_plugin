@@ -12,7 +12,7 @@ class ArModelBuilder: NSObject {
         //Create material
         let material = SCNMaterial()
         let opacity: CGFloat
-        
+
         if let textureSourcePath = flutterAssetFile {
             // Use given asset as plane texture
             let key = FlutterDartProject.lookupKey(forAsset: textureSourcePath)
@@ -31,7 +31,7 @@ class ArModelBuilder: NSObject {
             // Use standard planes
             opacity = 0.3
         }
-        
+
         let planeNode = SCNNode(geometry: plane)
         planeNode.position = SCNVector3Make(anchor.center.x, 0, anchor.center.z)
         // rotate plane by 90 degrees to match the anchor (planes are vertical by default)
@@ -59,7 +59,7 @@ class ArModelBuilder: NSObject {
 
     // Creates a node from a given gltf2 (.gltf) model in the Flutter assets folder
     func makeNodeFromGltf(name: String, modelPath: String, transformation: Array<NSNumber>?) -> SCNNode? {
-        
+
         var scene: SCNScene
         let node: SCNNode = SCNNode()
 
@@ -68,7 +68,8 @@ class ArModelBuilder: NSObject {
             scene = try sceneSource.scene()
 
             for child in scene.rootNode.childNodes {
-                child.scale = SCNVector3(0.01,0.01,0.01) // Compensate for the different model dimension definitions in iOS and Android (meters vs. millimeters)
+                // child.scale = SCNVector3(0.01,0.01,0.01) // Compensate for the different model dimension definitions in iOS and Android (meters vs. millimeters)
+                child.scale = SCNVector3(1.0,1.0,1.0) // Compensate for the different model dimension definitions in iOS and Android (meters vs. millimeters)
                 //child.eulerAngles.z = -.pi // Compensate for the different model coordinate definitions in iOS and Android
                 //child.eulerAngles.y = -.pi // Compensate for the different model coordinate definitions in iOS and Android
                 node.addChildNode(child.flattenedClone())
@@ -88,7 +89,7 @@ class ArModelBuilder: NSObject {
 
     // Creates a node from a given gltf2 (.gltf) model in the Flutter assets folder
     func makeNodeFromFileSystemGltf(name: String, modelPath: String, transformation: Array<NSNumber>?) -> SCNNode? {
-        
+
         var scene: SCNScene
         let node: SCNNode = SCNNode()
 
@@ -114,10 +115,10 @@ class ArModelBuilder: NSObject {
             return nil
         }
     }
-    
+
     // Creates a node from a given glb model in the app's documents directory
     func makeNodeFromFileSystemGLB(name: String, modelPath: String, transformation: Array<NSNumber>?) -> SCNNode? {
-        
+
         var scene: SCNScene
         let node: SCNNode = SCNNode()
 
@@ -143,13 +144,13 @@ class ArModelBuilder: NSObject {
             return nil
         }
     }
-    
+
     // Creates a node form a given glb model path
     func makeNodeFromWebGlb(name: String, modelURL: String, transformation: Array<NSNumber>?) -> Future<SCNNode?, Never> {
-        
+
         return Future {promise in
             var node: SCNNode? = SCNNode()
-            
+
             let handler: (URL?, URLResponse?, Error?) -> Void = {(url: URL?, urlResponse: URLResponse?, error: Error?) -> Void in
                 // If response code is not 200, link was invalid, so return
                 if ((urlResponse as? HTTPURLResponse)?.statusCode != 200) {
@@ -162,7 +163,7 @@ class ArModelBuilder: NSObject {
                         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
                         let documentsDirectory = paths[0]
                         let targetURL = documentsDirectory.appendingPathComponent(urlResponse!.url!.lastPathComponent)
-                        
+
                         try? FileManager.default.removeItem(at: targetURL) //remove item if it's already there
                         try FileManager.default.copyItem(at: fileURL, to: targetURL)
 
@@ -189,26 +190,26 @@ class ArModelBuilder: NSObject {
                             print("\(error.localizedDescription)")
                             node = nil
                         }
-                        
+
                         // Delete file to avoid cluttering device storage (at some point, caching can be included)
                         try FileManager.default.removeItem(at: targetURL)
-                        
+
                         promise(.success(node))
                     } catch {
                         node = nil
                         promise(.success(node))
                     }
                 }
-                
+
             }
-            
-    
+
+
             let downloadTask = URLSession.shared.downloadTask(with: URL(string: modelURL)!, completionHandler: handler)
-            
+
             downloadTask.resume()
-            
+
         }
-        
+
     }
-    
+
 }
