@@ -35,8 +35,8 @@ class ArModelBuilder {
 
     // Creates feature point node
     fun makeFeaturePointNode(context: Context, xPos: Float, yPos: Float, zPos: Float): Node {
-        val featurePoint = Node()                 
-        var cubeRenderable: ModelRenderable? = null      
+        val featurePoint = Node()
+        var cubeRenderable: ModelRenderable? = null
         MaterialFactory.makeOpaqueWithColor(context, Color(android.graphics.Color.YELLOW))
         .thenAccept { material ->
             val vector3 = Vector3(0.01f, 0.01f, 0.01f)
@@ -50,7 +50,7 @@ class ArModelBuilder {
     }
 
     // Creates a coordinate system model at the world origin (X-axis: red, Y-axis: green, Z-axis:blue)
-    // The code for this function is adapted from Alexander's stackoverflow answer (https://stackoverflow.com/questions/48908358/arcore-how-to-display-world-origin-or-axes-in-debug-mode) 
+    // The code for this function is adapted from Alexander's stackoverflow answer (https://stackoverflow.com/questions/48908358/arcore-how-to-display-world-origin-or-axes-in-debug-mode)
     fun makeWorldOriginNode(context: Context): Node {
         val axisSize = 0.1f
         val axisRadius = 0.005f
@@ -105,9 +105,9 @@ class ArModelBuilder {
                 .setRegistryId(modelPath)
                 .build()
                 .thenAccept{ renderable ->
+                    renderable.isShadowCaster = false
+                    renderable.isShadowReceiver = false
                     gltfNode.renderable = renderable
-                    gltfNode.renderable.isShadowReceiver = false
-                    gltfNode.renderable.isShadowCaster = false
                     gltfNode.name = name
                     val transform = deserializeMatrix4(transformation)
                     gltfNode.worldScale = transform.first
