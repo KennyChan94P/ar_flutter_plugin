@@ -106,6 +106,8 @@ class ArModelBuilder {
                 .build()
                 .thenAccept{ renderable ->
                     gltfNode.renderable = renderable
+                    gltfNode.renderable.isShadowReceiver = false
+                    gltfNode.renderable.isShadowCaster = false
                     gltfNode.name = name
                     val transform = deserializeMatrix4(transformation)
                     gltfNode.worldScale = transform.first
